@@ -1,7 +1,6 @@
 #include<bits/stdc++.h>
 #define int long long
 using namespace std;
-const int maxn = 1e5 + 5;
 
 namespace bignum {
 	class Big {
@@ -463,7 +462,67 @@ namespace heavychain {
 
 }
 
-using namespace heavychain;
+namespace maxflow {
+	int n, m, s, t, ans;
+
+	struct node {
+		int v, w, nt;
+	} e[maxm];
+
+	int h[maxn], cur[maxn], id = 1;
+
+	void add(int u, int v, int w) {
+		e[++id] = node {v, w, h[u]};
+		h[u] = id;
+	}
+
+	int d[maxn];
+
+	bool bfs() {
+		memset(d, -1, sizeof(d));
+		queue<int> q;
+		q.push(s);
+		d[s] = 0;
+		while (!q.empty()) {
+			int u = q.front();
+			q.pop();
+			for (int i = h[u]; i; i = e[i].nt) {
+				int v = e[i].v;
+				if (d[v] == -1 && e[i].w > 0) {
+					d[v] = d[u] + 1;
+					q.push(v);
+				}
+			}
+		}
+		if (d[t] == -1) {
+			return 0;
+		}
+		return 1;
+	}
+
+	int dfs(int u, int mf) {
+		if (u == t) {
+			return mf;
+		}
+		int tt = 0;
+		for (int i = cur[u]; i; i = e[i].nt) {
+			int v = e[i].v;
+			cur[u] = i;
+			if (d[v] == d[u] + 1 && e[i].w > 0) {
+				tt = dfs(v, min(mf, e[i].w));
+				if (tt) {
+					e[i].w -= tt;
+					e[i ^ 1].w += tt;
+					return tt;
+				} else {
+					d[v] = -1;
+				}
+			}
+		}
+		return 0;
+	}
+
+}
 
 signed main() {
 	ios::sync_with_stdio(0);
