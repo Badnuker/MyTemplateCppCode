@@ -1,6 +1,7 @@
 #include<bits/stdc++.h>
 #define int long long
 using namespace std;
+const int maxn = 2e5 + 5, maxm = 5e5 + 5, mod = 998244353;
 
 namespace bignum {
 	class Big {
@@ -161,6 +162,28 @@ namespace math {
 		return res;
 	}
 
+	void exgcd(int exgcd_a, int exgcd_b, int &exgcd_x, int &exgcd_y) {
+		if (exgcd_b == 0) {
+			exgcd_x = 1, exgcd_y = 0;
+			return;
+		}
+		exgcd(exgcd_b, exgcd_a % exgcd_b, exgcd_y, exgcd_x);
+		exgcd_y -= exgcd_a / exgcd_b * exgcd_x;
+	}
+
+	int CRT(int CRT_k, int* CRT_a, int* CRT_r) {
+		int CRT_n = 1, res = 0;
+		for (int i = 1; i <= CRT_k; i++) {
+			CRT_n *= CRT_r[i];
+		}
+		for (int i = 1; i <= CRT_k; i++) {
+			int CRT_m = CRT_n / CRT_r[i], CRT_b, CRT_y;
+			exgcd(CRT_m, CRT_r[i], CRT_b, CRT_y);
+			res += CRT_a[i] * CRT_m * CRT_b % CRT_n;
+			res %= CRT_n;
+		}
+		return (res % CRT_n + CRT_n) % CRT_n;
+	}
 }
 
 namespace bittree {
